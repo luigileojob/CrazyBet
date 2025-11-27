@@ -26,17 +26,23 @@ public class Utente {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
+
     @NotNull
     private LocalDate dataDiNascita;
+
     @Email
     @Column(unique = true)
     private String email;
+
     private String cellulare;
+
     @Size(min = 8)
     private String password;
     private BigDecimal saldo = BigDecimal.ZERO;
+
     @Enumerated(EnumType.STRING)
     private Ruolo ruolo;
+
     @OneToMany(mappedBy = "utente")
     private List<Scommessa> scommesse;
 

@@ -17,10 +17,13 @@ public class Squadra {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column (unique = true)
     private String nomeSquadra;
+
     @OneToMany (mappedBy = "squadraCasa")
     private List<Partita> partiteInCasa;
+
     @OneToMany (mappedBy = "squadraOspite")
     private List<Partita> partiteInTrasferta;
 

@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -89,9 +90,6 @@ public class PartitaService {
             partita.setEsitoPartita(Partita.Esito.PAREGGIO);
         }
         return partitaRepository.save(partita);
-    }
-    public Partita aggiungiScommessa( Partita scommessaPartita) {
-        return partitaRepository.save(scommessaPartita);
     }
 
 }
