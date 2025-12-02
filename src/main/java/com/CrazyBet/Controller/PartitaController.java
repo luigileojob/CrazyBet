@@ -34,5 +34,4 @@ public class PartitaController {
         return partitaService.esitoPartita(partitaId);
     }
 
-
 }

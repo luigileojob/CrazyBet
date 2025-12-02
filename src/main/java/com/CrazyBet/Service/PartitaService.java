@@ -34,9 +34,9 @@ public class PartitaService {
         return partitaRepository.save(partita);
     }
 
-    public Partita cercaPartitaConId(Long id) {
-        return partitaRepository.findById(id)
-                .orElseThrow(() -> new PartitaNotFoundException("Partita non trovata con ID: " + id));
+    public Partita cercaPartitaConId(Long partitaId) {
+        return partitaRepository.findById(partitaId)
+                .orElseThrow(() -> new PartitaNotFoundException("Partita non trovata con ID: " + partitaId));
     }
 
     public List<Partita> aggiornaStatusPartite(Long utenteId) {

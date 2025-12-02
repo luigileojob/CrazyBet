@@ -11,8 +11,10 @@ import com.CrazyBet.Repository.ScommessaRepository;
 import com.CrazyBet.Repository.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -25,9 +27,6 @@ public class ScommessaService {
     @Autowired
     private PartitaRepository partitaRepository;
 
-
-    //DEFINIRE STATUS SCOMMESSA
-    //DEFINIRE ESITO SCOMMESSA SCELTA
 
      public Scommessa aggiungiScommessaPartita(Long utenteId, List<Long> partitaIdList, Scommessa.EsitoScommessa esitoScommessa, BigDecimal importoScommesso) {
 
@@ -69,4 +68,83 @@ public class ScommessaService {
          return scommessaRepository.save(scommessa);
      }
 
+     public Scommessa cercaScommessaConId (Long scommessaId) {
+         return scommessaRepository.findById(scommessaId)
+                 .orElseThrow(()-> new ScommessaNotFoundException("La scommessa con ID " + scommessaId + " non è stata trovata"));
+     }
+
+    public List<Scommessa> cercaListaScommesseUtenteConId(Long utenteId) {
+       List<Scommessa> scommesse = scommessaRepository.findByUtenteId(utenteId);
+
+       if (scommesse.isEmpty()) {
+           boolean utenteEsiste = utenteRepository.existsById(utenteId);
+           if (!utenteEsiste) {
+               throw new UtenteNotFoundException("L'utente con ID : " + utenteId + " non è stato trovato");
+           }
+       }
+       return scommesse;
+    }
+
+    public List<Scommessa> cercaScommessePartitaConId(Long partitaId) {
+        List<Scommessa> scommesse = scommessaRepository.findByPartitaId(partitaId);
+
+        if (scommesse.isEmpty()) {
+            boolean partitaEsiste = partitaRepository.existsById(partitaId);
+            if (!partitaEsiste) {
+                throw new PartitaNotFoundException("La partita con ID " + partitaId + " non esiste.");
+            }
+        }
+        return scommesse;
+    }
+
+    @Transactional
+    public List<Scommessa> aggiornaValidazioneScommesseUtente(Long utenteId) {
+
+        Utente utente = utenteRepository.findById(utenteId)
+                .orElseThrow(() -> new UtenteNotFoundException("Utente non trovato"));
+
+        List<Scommessa> scommesse = scommessaRepository.findByUtenteId(utenteId);
+
+        for (Scommessa scommessa : scommesse) {
+
+            boolean tuttePartiteFinite = true;
+            boolean tutteIndovinate = true;
+
+            for (Partita partita : scommessa.getPartite()) {
+
+                if (partita.getStatusPartita() != Partita.Status.FINITA) {
+                    tuttePartiteFinite = false;
+                    break;
+                }
+
+                if (!scommessa.getEsitoScommessaUtente().name().equals(partita.getEsitoPartita().name())) {
+                    tutteIndovinate = false;
+                }
+            }
+
+            if (!tuttePartiteFinite) {
+                scommessa.setStatusScommessa(Scommessa.StatusScommessa.IN_ATTESA);
+                continue;
+            }
+
+            if (tutteIndovinate) {
+                scommessa.setStatusScommessa(Scommessa.StatusScommessa.VINTA);
+
+                BigDecimal vincita = scommessa.getImportoScommessa().multiply(BigDecimal.valueOf(2));
+                utente.setSaldo(utente.getSaldo().add(vincita));
+
+            } else {
+                scommessa.setStatusScommessa(Scommessa.StatusScommessa.PERSA);
+            }
+        }
+        utenteRepository.save(utente);
+        return scommessaRepository.saveAll(scommesse);
+    }
+
+
+
+
+
 }
+
+
