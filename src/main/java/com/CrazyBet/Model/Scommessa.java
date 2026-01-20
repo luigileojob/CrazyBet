@@ -48,4 +48,3 @@ public class Scommessa {
     )
     private List<Partita> partite = new ArrayList<>();
 }
-

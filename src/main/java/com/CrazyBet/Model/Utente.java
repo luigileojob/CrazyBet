@@ -30,13 +30,15 @@ public class Utente {
     @NotNull
     private LocalDate dataDiNascita;
 
+    @NotNull
     @Email
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String cellulare;
 
     @Size(min = 8)
+    @Column(nullable = false)
     private String password;
     private BigDecimal saldo = BigDecimal.ZERO;
 

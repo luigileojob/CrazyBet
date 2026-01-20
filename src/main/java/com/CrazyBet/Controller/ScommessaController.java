@@ -47,6 +47,11 @@ public class ScommessaController {
         return scommessaService.aggiornaValidazioneScommesseUtente(utenteId);
     }
 
+    @PutMapping ("/validazione-stato-tutte-scommesse")
+    public List<Scommessa> validazioneStatoTutteScommesse (@RequestParam Long utenteIdAdmin){
+        return scommessaService.aggiornaValidazioneTutteScommesse(utenteIdAdmin);
+    }
+
 
 
 

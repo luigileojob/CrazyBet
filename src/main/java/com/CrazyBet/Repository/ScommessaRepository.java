@@ -9,7 +9,8 @@ import java.util.List;
 @Repository
 public interface ScommessaRepository extends JpaRepository <Scommessa, Long> {
     List<Scommessa> findByUtenteId(Long utenteId);
-    List<Scommessa> findByPartitaId(Long partitaId);
+    List<Scommessa> findByPartite_Id(Long partitaId);
+    List<Scommessa> findByStatusScommessa(Scommessa.StatusScommessa statusScommessa);
 
 }
 

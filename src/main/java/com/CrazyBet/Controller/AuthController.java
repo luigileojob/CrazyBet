@@ -1,0 +1,45 @@
+package com.CrazyBet.Controller;
+
+import com.CrazyBet.Security.JwtService;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/auth")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+
+    @PostMapping("/login")
+    public Map<String, String> login(@RequestBody Map<String, String> request) {
+
+        String email = request.get("email");
+        String password = request.get("password");
+
+        // 1️⃣ Verifica credenziali
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
+
+        // 2️⃣ Ottieni ruolo dall'utente autenticato
+        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        if(role.startsWith("ROLE_")) {
+            role = role.substring(5); // rimuove "ROLE_" se presente
+        }
+
+        // 3️⃣ Genera token con email e ruolo
+        String token = jwtService.generateToken(email, role);
+
+        // 4️⃣ Ritorna token al client
+        return Map.of("token", token);
+    }
+
+}
