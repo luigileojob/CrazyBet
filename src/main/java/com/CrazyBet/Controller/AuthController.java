@@ -24,21 +24,17 @@ public class AuthController {
         String email = request.get("email");
         String password = request.get("password");
 
-        // 1️⃣ Verifica credenziali
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password)
         );
 
-        // 2️⃣ Ottieni ruolo dall'utente autenticato
         String role = authentication.getAuthorities().iterator().next().getAuthority();
         if(role.startsWith("ROLE_")) {
             role = role.substring(5); // rimuove "ROLE_" se presente
         }
 
-        // 3️⃣ Genera token con email e ruolo
         String token = jwtService.generateToken(email, role);
 
-        // 4️⃣ Ritorna token al client
         return Map.of("token", token);
     }
 
